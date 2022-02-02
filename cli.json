@@ -1,0 +1,9 @@
+{
+    "name": "cli",
+    "runtimetype": "cli",
+    "cpu": "AMD Ryzen 9 5950X (32) @ 3.400GHz",
+    "cores": 0,
+    "mem": 0,
+    "gpu": "",
+    "gpus": 0 
+}

@@ -1,0 +1,8 @@
+{
+    "conditions": {
+        "runtimetype": "fibonacci"
+    },
+    "env": {
+        "fibonacciNum": "10"
+    }
+}

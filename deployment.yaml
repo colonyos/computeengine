@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fibonacci-deployment 
+  labels:
+    app: fibonacci
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: fibonacci
+  template:
+    metadata:
+      labels:
+        app: fibonacci
+    spec:
+      containers:
+      - name: fibonacci
+        image: johan/fibonacci_k8s
+        command:
+            - "go"
+            - "run"
+            - "solver.go"
+        lifecycle:
+          preStop:
+            exec:
+              command: ["go","run","solver.go", "unregister"]
+        resources:
+            requests:
+              memory: "1000Mi"
+              cpu: "1000m"
+            limits:
+              memory: "1000Mi"
+              cpu: "1000m"
+        env:
+        - name: COLONYID
+          value: "d03b4b236a479622ee5542e4ead7d254315b557bba74391511b5942e3a05bffd"
+        - name: COLONYPRVKEY
+          value: "ccf0cdd308b62add43fb2555410838948dfbcc8b0f186550f6098470f20e6108"
+        - name: COLONIES_SERVER_HOST
+          value: "10.0.0.240"
+        - name: COLONIES_SERVER_PORT
+          value: "8080"
+        - name: CORES 
+          value: "1"
+        - name: MEM 
+          value: "1000"
