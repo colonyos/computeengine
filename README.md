@@ -187,6 +187,7 @@ Attributes:
 | 5fefe32a3325c38533bc92bcd0ee1b9bae1ae7267449d6e044576e24303a5ec1 | fibonacciNum |    10 | Env  |
 | 9b376c4f205c666484f9ca36e6eb898e684cab3abb0b7868edf1a95cc5574191 | result       |    55 | Out  |
 +------------------------------------------------------------------+--------------+-------+------+
+```
 
 # Checking the status of the compute engine
 ```console
