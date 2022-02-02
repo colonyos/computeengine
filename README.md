@@ -3,15 +3,47 @@ This repo contains example code how to build a compute engine based on Colonies 
 
 * Using the Colonies CLI tool we are going to submit process specs to the Colonies Server. The process spec contains a Fibonnaci number that should be calculate by a Colony App/Worker running inside a Kubernetes pod. 
 * The Colonies Server maintains a queue of incoming process specs (jobs). 
-* Each Fibonacci worker connects to the Colonies Server and request a process spec, which it then executes. That means that all workers compete on being assigned a process spec. The Colonies Server ensure that only one worker get a certain process spec. If a worker doesn't complete a task in certain time, the Colonies Server then move the process spec back to the queue so that other workers can execute it.
-* Using Kubernetes, it possible to dynamically scale number of workers (pods) up and down. If the compute engine is down-scaled and a certian worker is destroyed before it finish, the Colonies Server will then move the process spec back to the queue as mentioned before. 
+* Each Fibonacci worker connects to the Colonies Server and request a process spec, which it then executes. That means that all workers compete on getting an assigned process spec. The Colonies Server ensure that only one worker get a certain process spec. If a worker doesn't complete a process spec in certain time (specified in the process spec), the Colonies Server then move the process spec back to the queue so that other workers can execute it. 
+* Consequently, it possible to dynamically scale number of workers (pods) up and down. If the compute engine is down-scaled and a certain worker is destroyed before it finish, the Colonies Server will then move the process spec back to the queue as mentioned above. 
 
 ![Compute Engine](docs/images/compute_engine.png?raw=true "Compute Engine")
 
 # Colony App/Worker
+The Colony App/Worker will create a new Colony Runtime and register it to the Colonies Server when it is deployed to Kubernetes (i.e a pod is started). To do so, it needs to have access to a Colony Private Key. This private key will be pass as an environmental variable to the container (see Kubernetes Yaml below). The Runtime Id is also stored on the filesystem (/tmp/runtimeid) so the container code can unregister itself when the Kubernetes pod is destroyed.  
+
+After registering, the worker connects to the Colonies Server to be an assigned a process spec. Below is some Golang code how to assign process specs to the worker.
+
+```go
+for {
+  assignedProcess, err := client.AssignProcess(colonyID, runtimePrvKey)
+  if err != nil {
+    time.Sleep(1000 * time.Millisecond)
+    continue
+  }
+
+  // Parse env attribute and calculate the given Fibonacci number
+  for _, attribute := range assignedProcess.Attributes {
+    if attribute.Key == "fibonacciNum" {
+    nr, _ := strconv.Atoi(attribute.Value)
+    fibonacci := fib.FibonacciBig(uint(nr))
+
+    min := 100   // 0.1 s
+    max := 40000 // 40s
+    sleepTime := rand.Intn(max-min+1) + min
+    time.Sleep(time.Duration(sleepTime) * time.Millisecond)
+
+    attribute := core.CreateAttribute(assignedProcess.ID, core.OUT, "result", fibonacci.String())
+    client.AddAttribute(attribute, runtimePrvKey)
+
+    client.CloseSuccessful(assignedProcess.ID, runtimePrvKey)
+  }
+}
+```
+
+Note that we added an extra sleep to make the computation take longer time. 
 
 # Kubernetes 
-The Yaml below contains deployment code for Kubernetes. Note the **preStop** lifecycle hook. It is used to unregister a worker when the pods is destroyed. This is done by making sure the Golang code above stores its runtime id in a file, which can then be fetched to unregister the worker. The **preStop** is always called when the pod is undeployed.
+The Yaml below contains deployment code for Kubernetes. Note the **preStop** lifecycle hook. It is used to unregister a worker when the pod is destroyed. This is done by storing the Runtime Id in a file (/tmp/runtimeid) which can then be read by the Golang code to unregister the worker.Note that the **preStop** hook is automatically called when the pod is undeployed.
 
 ```yaml
 apiVersion: apps/v1
@@ -67,7 +99,7 @@ spec:
 kubectl apply -f deployment.yaml -n test
 ```
 
-Note that a namespace named **test** must be created before calling the command above. The scale-up, just increase the replicas field in the Yaml and re-apply the deployment.yaml file using the command above. Also note that all Colony ids and keys need to be created, and the Yaml file need to updated with correct keys before testing the code in this repo.
+Note that a namespace named **test** must be created before calling the command above. The scale-up, just increase the replicas field in the Yaml and re-apply the deployment.yaml file using the command above. Also note that all Colony Ids and keys need to be created and the Yaml file need to updated with correct keys before testing the code in this repo.
 
 # Submitting a process spec
 ```json
@@ -117,7 +149,7 @@ Output:
 +------------------------------------------------------------------+---------------------+----------------+
 ```
 
-# Looking up the result of process 
+# Looking up the result of a process 
 ```console
 colonies process get --processid c42fbe3d729b3d145fc3288ccc785f0accd8c07aea65178854d6dcdb18a080f 
 ```
