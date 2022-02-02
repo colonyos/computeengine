@@ -82,12 +82,12 @@ Note that a namespace named **test** must be created before calling the command 
 ```
 
 ```console
-colonies process subitt --spec process.json
+colonies process submit --spec process.json
 ```
 
 # Checking the queue
 ```console
-colonies process psw --count 5 
+colonies process psw --count 4
 ```
 Output:
 ```
@@ -100,3 +100,91 @@ Output:
 | 79d0f68d42d85df307ad0774dc01ae1a722fe85a996b28009356d9f7936e59c2 | 2022-02-02 14:37:35 |
 +------------------------------------------------------------------+---------------------+
 ```
+
+# Checking the result queue 
+```console
+colonies process pss --count 4
+```
+Output:
+```
++------------------------------------------------------------------+---------------------+----------------+
+|                                ID                                |      END TIME       | TARGET RUNTIME |
++------------------------------------------------------------------+---------------------+----------------+
+| 2c42fbe3d729b3d145fc3288ccc785f0accd8c07aea65178854d6dcdb18a080f | 2022-02-02 14:39:00 | fibonacci |
+| 63eefd3325f64c5866debc71171a754ef3de38f44db553eaf1875080014ee300 | 2022-02-02 14:38:32 | fibonacci |
+| b4ab1fb17873fac30b86b5ad7f284e977e9e6a55719247cec619b92753de21cc | 2022-02-02 14:38:29 | fibonacci |
+| 79d0f68d42d85df307ad0774dc01ae1a722fe85a996b28009356d9f7936e59c2 | 2022-02-02 14:38:18 | fibonacci |
++------------------------------------------------------------------+---------------------+----------------+
+```
+
+# Looking up the result of process 
+```console
+colonies process get --processid c42fbe3d729b3d145fc3288ccc785f0accd8c07aea65178854d6dcdb18a080f 
+```
+Output:
+```
+Process:
++-------------------+------------------------------------------------------------------+
+| ID                | 2c42fbe3d729b3d145fc3288ccc785f0accd8c07aea65178854d6dcdb18a080f |
+| IsAssigned        | True                                                             |
+| AssignedRuntimeID | 15c31ed24700e1828085b20d9ce38778e8c3f8d9f0ef34e78c2c3f23c0147cb4 |
+| State             | Successful                                                       |
+| SubmissionTime    | 2022-02-02 14:37:36                                              |
+| StartTime         | 2022-02-02 14:38:32                                              |
+| EndTime           | 2022-02-02 14:39:00                                              |
+| Deadline          | 0001-01-01 00:00:00                                              |
+| Retries           | 0                                                                |
++-------------------+------------------------------------------------------------------+
+
+Requirements:
++----------------+------------------------------------------------------------------+
+| ColonyID       | d03b4b236a479622ee5542e4ead7d254315b557bba74391511b5942e3a05bffd |
+| RuntimeIDs     | None                                                             |
+| RuntimeType    | fibonacci                                                        |
+| Memory         | 0                                                                |
+| CPU Cores      | 0                                                                |
+| Number of GPUs | 0                                                                |
+| Timeout        | 0                                                                |
+| Max retries    | 0                                                                |
++----------------+------------------------------------------------------------------+
+
+Attributes:
++------------------------------------------------------------------+--------------+-------+------+
+|                                ID                                |     KEY      | VALUE | TYPE |
++------------------------------------------------------------------+--------------+-------+------+
+| 5fefe32a3325c38533bc92bcd0ee1b9bae1ae7267449d6e044576e24303a5ec1 | fibonacciNum |    10 | Env  |
+| 9b376c4f205c666484f9ca36e6eb898e684cab3abb0b7868edf1a95cc5574191 | result       |    55 | Out  |
++------------------------------------------------------------------+--------------+-------+------+
+
+# Checking the status of the compute engine
+```console
+colonies colony status
+```
+Output:
+```
+Process statistics:
++------------+----+
+| Waiting    | 0  |
+| Running    | 0  |
+| Successful | 25 |
+| Failed     | 0  |
++------------+----+
+
+Total capacity:
++----------+----------+
+| Runtimes | 2        |
+| Cores    | 1        |
+| Memory   | 1000 MiB |
+| GPUs     | 0        |
++----------+----------+
+
+Available capacity:
++----------+----------+
+| Runtimes | 2        |
+| Cores    | 1        |
+| Memory   | 1000 MiB |
+| GPUs     | 0        |
++----------+----------+
+```
+
+
