@@ -1,4 +1,4 @@
 all:
-	docker build . -t johan/fibonacci_k8s
+	docker build . -t colonyos/fibonacci_k8s
 push:
-	docker image push johan/fibonacci_k8s
+	docker image push colonyos/fibonacci_k8s

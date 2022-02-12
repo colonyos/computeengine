@@ -5,7 +5,7 @@ metadata:
   labels:
     app: fibonacci
 spec:
-  replicas: 1 
+  replicas: 18
   selector:
     matchLabels:
       app: fibonacci
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: fibonacci
-        image: johan/fibonacci_k8s
+        image: colonyos/fibonacci_k8s
         command:
             - "go"
             - "run"
@@ -40,7 +40,7 @@ spec:
         - name: COLONIES_SERVER_HOST
           value: "10.0.0.240"
         - name: COLONIES_SERVER_PORT
-          value: "8080"
+          value: "50080"
         - name: CORES 
           value: "1"
         - name: MEM 

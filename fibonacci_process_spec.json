@@ -3,6 +3,6 @@
         "runtimetype": "fibonacci"
     },
     "env": {
-        "fibonacciNum": "10"
+        "fibonacciNum": "5000000"
     }
 }

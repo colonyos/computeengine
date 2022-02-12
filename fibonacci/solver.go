@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	"math/big"
 	"os"
 	"strconv"
 	"time"
@@ -10,9 +10,22 @@ import (
 	"github.com/colonyos/colonies/pkg/client"
 	"github.com/colonyos/colonies/pkg/core"
 	"github.com/colonyos/colonies/pkg/security/crypto"
-
-	fib "github.com/t-pwk/go-fibonacci"
 )
+
+func Fibonacci(n uint) *big.Int {
+	if n <= 1 {
+		return big.NewInt(int64(n))
+	}
+
+	var n2, n1 = big.NewInt(0), big.NewInt(1)
+
+	for i := uint(1); i < n; i++ {
+		n2.Add(n2, n1)
+		n1, n2 = n2, n1
+	}
+
+	return n1
+}
 
 func main() {
 	args := os.Args
@@ -126,17 +139,20 @@ func main() {
 		for _, attribute := range assignedProcess.Attributes {
 			if attribute.Key == "fibonacciNum" {
 				nr, _ := strconv.Atoi(attribute.Value)
-				fibonacci := fib.FibonacciBig(uint(nr))
+				fmt.Println("Finding fibonacci number for", nr)
+				fibonacci := Fibonacci(uint(nr))
 
-				min := 100   // 0.1 s
-				max := 40000 // 40s
-				sleepTime := rand.Intn(max-min+1) + min
+				fmt.Println(fibonacci.String())
 
-				fmt.Printf("sleeping for %d\n", sleepTime)
+				//min := 100   // 0.1 s
+				//max := 40000 // 40s
+				//sleepTime := rand.Intn(max-min+1) + min
 
-				time.Sleep(time.Duration(sleepTime) * time.Millisecond)
+				//fmt.Printf("sleeping for %d\n seconds", sleepTime)
 
-				attribute := core.CreateAttribute(assignedProcess.ID, core.OUT, "result", fibonacci.String())
+				//time.Sleep(time.Duration(sleepTime) * time.Millisecond)
+
+				attribute := core.CreateAttribute(assignedProcess.ID, core.OUT, "result", strconv.Itoa(len(fibonacci.String())))
 				client.AddAttribute(attribute, runtimePrvKey)
 
 				// Close the process as Successful

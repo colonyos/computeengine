@@ -1,6 +1,7 @@
 FROM golang:1.17
 
 WORKDIR /go/src/fibonacci
+
 COPY solver.go .
 COPY go.mod .
 
