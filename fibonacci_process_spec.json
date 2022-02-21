@@ -2,6 +2,8 @@
     "conditions": {
         "runtimetype": "fibonacci"
     },
+    "maxexectime": 120,
+    "maxretries": 3,
     "env": {
         "fibonacciNum": "5000000"
     }

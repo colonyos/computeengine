@@ -34,9 +34,9 @@ spec:
               cpu: "1000m"
         env:
         - name: COLONYID
-          value: "d03b4b236a479622ee5542e4ead7d254315b557bba74391511b5942e3a05bffd"
+          value: "22031e3ca65904cdcde29b296a69b6f51ac3d8b567ce54da26d58740362451ba"
         - name: COLONYPRVKEY
-          value: "ccf0cdd308b62add43fb2555410838948dfbcc8b0f186550f6098470f20e6108"
+          value: "b4cac4e30af9549a29135c0b0e194f4e360da7c4407eec8d8ed0b4a1eb7b3745"
         - name: COLONIES_SERVER_HOST
           value: "10.0.0.240"
         - name: COLONIES_SERVER_PORT
